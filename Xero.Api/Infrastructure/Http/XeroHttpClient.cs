@@ -55,25 +55,33 @@ namespace Xero.Api.Infrastructure.Http
         {
             Client.ModifiedSince = ModifiedSince;
 
-            return Read<TResult, TResponse>(Client.Get(endPoint, new QueryGenerator(Where, Order, Parameters).UrlEncodedQueryString));
+            return Read<TResult, TResponse>(Client.Get(endPoint, new QueryGenerator(Where, Order, Parameters, endPoint).UrlEncodedQueryString));
         }
 
         internal IEnumerable<TResult> Post<TResult, TResponse>(string endpoint, byte[] data, string mimeType)
             where TResponse : IXeroResponse<TResult>, new()
         {
-            return Read<TResult, TResponse>(Client.Post(endpoint, data, mimeType, new QueryGenerator(null, null, Parameters).UrlEncodedQueryString));
+            return Read<TResult, TResponse>(Client.Post(endpoint, data, mimeType, new QueryGenerator(null, null, Parameters, endpoint).UrlEncodedQueryString));
         }
 
         public IEnumerable<TResult> Post<TResult, TResponse>(string endPoint, object data)
             where TResponse : IXeroResponse<TResult>, new()
         {
-            return Read<TResult, TResponse>(Client.Post(endPoint, XmlMapper.To(data), query: new QueryGenerator(null, null, Parameters).UrlEncodedQueryString));
+            if (endPoint.Contains("payroll.xro/2.0"))
+            {
+                return Read<TResult, TResponse>(Client.Post(endPoint, JsonMapper.To(data), contentType: "application/json", query: new QueryGenerator(null, null, Parameters, endPoint).UrlEncodedQueryString));
+            }
+            else
+                return Read<TResult, TResponse>(Client.Post(endPoint, XmlMapper.To(data), query: new QueryGenerator(null, null, Parameters, endPoint).UrlEncodedQueryString));
         }
 
         public IEnumerable<TResult> Put<TResult, TResponse>(string endPoint, object data)
             where TResponse : IXeroResponse<TResult>, new()
         {
-            return Read<TResult, TResponse>(Client.Put(endPoint, XmlMapper.To(data), query: new QueryGenerator(null, null, Parameters).UrlEncodedQueryString));
+            if (endPoint.Contains("payroll.xro/2.0"))
+                return Read<TResult, TResponse>(Client.Put(endPoint, JsonMapper.To(data), contentType: "application/json", query: new QueryGenerator(null, null, Parameters, endPoint).UrlEncodedQueryString));
+            else
+            return Read<TResult, TResponse>(Client.Put(endPoint, XmlMapper.To(data), query: new QueryGenerator(null, null, Parameters,endPoint).UrlEncodedQueryString));
         }
 
         public IEnumerable<TResult> Delete<TResult, TResponse>(string endPoint)
@@ -110,6 +118,16 @@ namespace Xero.Api.Infrastructure.Http
                 if (data.Elements != null && data.Elements.Any())
                 {
                     throw new ValidationException(data);
+                }
+
+                if (data.Elements == null)
+                {
+                    var datav2 = JsonMapper.From<ApiExceptionv2>(response.Body);
+
+                    if (datav2.Problem != null)
+                    {
+                        throw new ValidationException(datav2);
+                    }
                 }
 
                 //CHeck for inline errors

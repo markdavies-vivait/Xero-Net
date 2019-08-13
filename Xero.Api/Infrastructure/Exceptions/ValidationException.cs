@@ -27,6 +27,19 @@ namespace Xero.Api.Infrastructure.Exceptions
             }
         }
 
+        public ValidationException(ApiExceptionv2 apiException)
+        {
+            if (apiException.Problem != null)
+            {
+                ValidationErrors = new List<ValidationError>();
+                
+                foreach (var ve in apiException.Problem.InvalidFields)
+                {
+                    ValidationErrors.Add(new ValidationError() { Message = ve.Name + " - " + ve.Reason });
+                }
+            }
+        }
+
         public List<ValidationError> ValidationErrors { get; set; }
 
         public override string ToString()

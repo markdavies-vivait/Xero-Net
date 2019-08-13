@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Xero.Api.Common;
-using Xero.Api.Payroll.Australia.Model.Types;
+using Xero.Api.Payroll.NewZealand.Model.Types;
 
-namespace Xero.Api.Payroll.Australia.Model
+namespace Xero.Api.Payroll.NewZealand.Model
 {
     [DataContract(Namespace = "")]
     public class EarningsRate : HasUpdatedDate
@@ -21,30 +21,21 @@ namespace Xero.Api.Payroll.Australia.Model
         public RateType RateType { get; set; }
 
         [DataMember]
-        public string AccountCode { get; set; }
-
-        [DataMember]
         public string TypeOfUnits { get; set; }
-        
-        [DataMember]
-        public bool IsExemptFromTax { get; set; }
 
         [DataMember]
-        public bool IsExemptFromSuper { get; set; }
+        public string ExpenseAccountID { get; set; }
 
         [DataMember]
-        public bool IsReportableAsW1 { get; set; }
+        public bool CurrentRecord { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
         public decimal? RatePerUnit { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public decimal? Multiplier { get; set; }
+        public decimal? MultipleOfOrdinaryEarningsRate { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public decimal? Amount { get; set; }
-
-        [DataMember(EmitDefaultValue = false)]
-        public bool AccrueLeave { get; set; }
+        public decimal? FixedAmount { get; set; }
     }
 }

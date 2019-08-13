@@ -29,6 +29,10 @@ namespace Xero.Api.Payroll.Common
         {
             return Create(new [] { item }).First();
         }
+        public TResult CreateOne(TResult item)
+        {
+            return Post(item).First();
+        }
 
         public IEnumerable<TResult> Update(IEnumerable<TResult> items)
         {
@@ -41,6 +45,10 @@ namespace Xero.Api.Payroll.Common
         }
 
         protected IEnumerable<TResult> Post(TRequest data)
+        {
+            return Client.Post<TResult, TResponse>(ApiEndpointUrl, data);
+        }
+        protected IEnumerable<TResult> Post(object data)
         {
             return Client.Post<TResult, TResponse>(ApiEndpointUrl, data);
         }

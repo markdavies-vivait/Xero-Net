@@ -110,7 +110,7 @@ namespace Xero.Api.Common
         {
             get
             {
-                return new QueryGenerator(_query, _orderBy, Parameters).QueryString;
+                return new QueryGenerator(_query, _orderBy, Parameters, ApiEndpointUrl).QueryString;
             }
         }
 

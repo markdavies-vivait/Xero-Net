@@ -9,13 +9,15 @@ namespace Xero.Api.Common
     {
         public string Where { get; private set; }
         public string Order { get; private set; }
+        public string Endpoint { get; private set; }
         public NameValueCollection Parameters { get; private set; }
         
-        public QueryGenerator(string where, string order, NameValueCollection parameters)
+        public QueryGenerator(string where, string order, NameValueCollection parameters, string endpoint)
         {
             Where = where;
             Order = order;
-            Parameters = parameters;            
+            Parameters = parameters;
+            Endpoint = endpoint;
         }
 
         public string QueryString
@@ -42,7 +44,10 @@ namespace Xero.Api.Common
 
             if (!string.IsNullOrWhiteSpace(Where))
             {
-                collection.Add("where", Where);
+                if (Endpoint.Contains("payroll.xro/2.0"))
+                    collection.Add("filter", Where);
+                else
+                    collection.Add("where", Where);
             }
 
             if (!string.IsNullOrWhiteSpace(Order))
